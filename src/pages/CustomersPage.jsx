@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import Axios from "axios"
 import Pagination from "../components/Pagination";
+import customersAPI from "../services/customersAPI";
 
 const CustomersPage = (props) => {
     
@@ -9,17 +10,43 @@ const CustomersPage = (props) => {
     // pour la pagination
     const [currentPage, setCurrentPage] = useState(1)
 
+    const fetchCustomers = async () => {
+        try{
+            const data = await customersAPI.findAll()
+            setCustomers(data)
+        }catch(error)
+        {
+            // notif à faire
+            console.error(error.response)
+        }
+    }
+
     useEffect(()=>{
-        Axios.get("http://127.0.0.1:8000/api/customers")
-            .then(response => response.data.member)
-            .then(data => setCustomers(data))
-            .catch(error => console.error(error.response))
+       fetchCustomers()
     },[])
 
     // pour la pagiation
     const handlePageChange = (page) => {
         setCurrentPage(page)
     }
+
+    const handleDelete = async (id) => {
+        // pessimiste
+        const originalCustomers = [...customers]
+        
+        // optimiste
+        setCustomers(customers.filter(customer => customer.id !== id))
+
+        try{
+            await customersAPI.delete(id)
+        }catch(error)
+        {
+            setCustomers(originalCustomers)
+            // notif à faire
+        }
+
+    }
+
 
     const itemsPerPage = 10 
 
@@ -56,7 +83,11 @@ const CustomersPage = (props) => {
                             <td className="text-center">{customer.totalAmount.toLocaleString()}</td>
                             <td className="text-center">{customer.unpaidAmount.toLocaleString()}</td>
                             <td>
-                                <button className="btn btn-sm btn-danger">Supprimer</button>
+                                <button 
+                                    disabled={customer.invoices.length > 0}
+                                    onClick={() => handleDelete(customer.id)}
+                                    className="btn btn-sm btn-danger"
+                                    >Supprimer</button>
                             </td>
                         </tr>
                     ))}
