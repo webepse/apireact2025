@@ -1,7 +1,7 @@
 import Axios from "axios"
 import { jwtDecode } from "jwt-decode"
 
-function authenticate(credentials){
+const authenticate = (credentials) => {
     return Axios
             .post("http://127.0.0.1:8000/api/login_check", credentials)
             .then(response => response.data.token)
@@ -14,12 +14,12 @@ function authenticate(credentials){
             })
 }
 
-function logout() {
+const logout = () => {
     window.localStorage.removeItem("authToken")
     delete Axios.defaults.headers["Authorization"]
 }
 
-function setup() {
+const setup = () => {
     // voir si on a un token
     const token = window.localStorage.getItem("authToken")
     if(token)
@@ -33,8 +33,23 @@ function setup() {
     }
 }
 
+const isAuthenticated = () => {
+    const token = window.localStorage.getItem("authToken")
+    if(token)
+    {
+        const jwtData = jwtDecode(token)
+        if((jwtData.exp * 1000) > new Date().getTime())
+        {
+            return true
+        }
+        return false // token expiré
+    }
+    return false // pas de token
+}
+
 export default {
     authenticate: authenticate,
     logout: logout,
-    setup: setup
+    setup: setup,
+    isAuthenticated: isAuthenticated
 }
