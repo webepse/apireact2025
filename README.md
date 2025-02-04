@@ -41,3 +41,32 @@ npm i axios
 ```
 npm i bootstrap
 ```
+
+## pour la gestion de la date
+```
+npm i moment
+```
+
+## gestion du token
+```
+npm i jwt-decode
+```
+
+
+# Clone du projet 
+
+Démarrer le serveur __Symfony__
+
+```
+git clone https://github.com/webepse/apireact2025.git
+```
+## installation des dépendances
+```
+npm i
+```
+
+## lancer le serveur 
+```
+npm start
+```
+
