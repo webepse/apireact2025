@@ -24,8 +24,23 @@ const CustomerPage = (props) => {
     })
 
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault()
+        console.log(customer)
+        try{
+            await customersAPI.create(customer)
+            navigate("/customers", {replace:true})
+        }catch({response})
+        {
+            const {violations} = response.data
+            if(violations){
+                const apiErrors = {}
+                violations.forEach(({propertyPath, message})=>{
+                    apiErrors[propertyPath] = message
+                })
+                setErrors(apiErrors)
+            }
+        }
     }
 
     const handleChange = (event) => {
