@@ -8,6 +8,9 @@ const CustomerPage = (props) => {
     let {id = "new"} = useParams()
     const navigate = useNavigate()
 
+    // création d'un state qui me permet de savoir si je suis en edit ou non
+    const [editing, setEditing] = useState(false)
+
     const [customer, setCustomer] = useState({
         lastName: "",
         firstName: "",
@@ -22,16 +25,42 @@ const CustomerPage = (props) => {
         company: ""
     })
 
+    const fetchCustomer = async id => {
+        try{
+            const {firstName, lastName, email, company, user} = await customersAPI.find(id)
+            setCustomer({firstName, lastName, email, company, user:"/api/users/"+user.id})
+        }catch(error)
+        {
+            // notif
+            navigate("/customers",{replace: true})
+        }
+    }
+
+    useEffect(()=>{
+        if(id !== "new")
+        {
+            setEditing(true)
+            fetchCustomer(id)
+        }
+    },[id])
+
 
     const handleSubmit = async (event) => {
         event.preventDefault()
-        console.log(customer)
+        // console.log(customer)
         try{
-            await customersAPI.create(customer)
-            navigate("/customers", {replace:true})
+            // vérifier si on édite ou non
+            if(editing)
+            {
+                await customersAPI.update(id, customer)
+                // notif à faire
+            }else{
+                await customersAPI.create(customer)
+                navigate("/customers", {replace:true})
+            }
         }catch({response})
         {
-            console.log(response)
+            // console.log(response)
             const {violations} = response.data
             if(violations){
                 const apiErrors = {}
@@ -52,7 +81,7 @@ const CustomerPage = (props) => {
 
     return ( 
         <>
-            <h1>Création d'un client</h1>
+            {!editing ? <h1>Création d'un client</h1> : <h1>Modification d'un client</h1>}
             <form onSubmit={handleSubmit}>
                 <Field 
                     name="lastName"
