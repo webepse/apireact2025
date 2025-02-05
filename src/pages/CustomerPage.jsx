@@ -12,8 +12,7 @@ const CustomerPage = (props) => {
         lastName: "",
         firstName: "",
         email: "",
-        company: "",
-        user: ""
+        company: ""
     })
 
     const [errors, setErrors] = useState({
@@ -32,6 +31,7 @@ const CustomerPage = (props) => {
             navigate("/customers", {replace:true})
         }catch({response})
         {
+            console.log(response)
             const {violations} = response.data
             if(violations){
                 const apiErrors = {}
