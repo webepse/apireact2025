@@ -39,7 +39,7 @@ const RegisterPage = (props) => {
             return 
         }
         try{
-            await Axios.post("http://apicourse.myepse.be/api/users", user)
+            await Axios.post("http://127.0.0.1:8000/api/users", user)
             setErrors({})
             navigate("/login", {replace: true})
         }catch({response}){
