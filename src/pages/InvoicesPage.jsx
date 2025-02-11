@@ -3,6 +3,7 @@ import {useState, useEffect} from 'react'
 import Pagination from "../components/Pagination";
 import invoicesAPI from "../services/invoicesAPI";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const STATUS_CLASSES = {
     PAID: "success",
@@ -30,7 +31,7 @@ const InvoicesPage = (props) => {
             setInvoices(data)
         }catch(error)
         {
-            // notif à faire
+            toast.error("Erreur lors du chargement des factures")
             console.error(error.response)
         }
     }
@@ -48,6 +49,20 @@ const InvoicesPage = (props) => {
         setSearch(value)
         // remettre la pagination à 1 après la recherche
         setCurrentPage(1)
+    }
+
+    const handleDelete = async (id) => {
+        const originalInvoices = [...invoices]
+        setInvoices(invoices.filter(invoice => invoice.id !== id))
+
+        try{
+            await invoicesAPI.delete(id)
+            toast.warning("La facture "+id+" a bien été supprimée")
+        }catch(error)
+        {
+            setInvoices(originalInvoices)
+            toast.error("Une erreur est survenue")
+        }
     }
 
     const formatDate = (str) => moment(str).format("DD/MM/YYYY")
@@ -100,6 +115,7 @@ const InvoicesPage = (props) => {
                                         className="btn btn-sm btn-success mx-2"
                                     >Modifier</Link>
                                     <button
+                                        onClick={()=>handleDelete(invoice.id)}
                                         className="btn btn-sm btn-danger mx-2"
                                     >Supprimer</button>
                                 </td>
