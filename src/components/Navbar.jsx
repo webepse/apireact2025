@@ -35,7 +35,7 @@ const Navbar = (props) => {
                         {(!isAuthenticated) ? (
                             <>
                                 <li className="nav-item">
-                                    <a href="#" className="nav-link">Inscription</a>
+                                    <NavLink to="/register" className="nav-link">Inscription</NavLink>
                                 </li>
                                 <li className="nav-item">
                                     <NavLink to="/login" className="btn btn-success">Connexion</NavLink>
